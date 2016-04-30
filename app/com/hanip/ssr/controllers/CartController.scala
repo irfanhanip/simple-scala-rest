@@ -1,8 +1,8 @@
-package controllers
+package com.hanip.ssr.controllers
 
+import com.hanip.ssr.models.Cart
 import play.api.libs.json._
 import play.api.mvc._
-import models.Cart
 
 object CartController extends Controller {
   def create() = play.mvc.Results.TODO

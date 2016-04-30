@@ -1,8 +1,8 @@
-package controllers
+package com.hanip.ssr.controllers
 
+import com.hanip.ssr.models.Book._
 import play.api.libs.json._
 import play.api.mvc._
-import models.Book._
 
 object Application extends Controller {
 

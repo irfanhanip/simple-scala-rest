@@ -1,4 +1,4 @@
-package controllers
+package com.hanip.ssr.controllers
 
 import play.api.mvc.Controller
 

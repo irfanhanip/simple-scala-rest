@@ -1,4 +1,4 @@
-package models
+package com.hanip.ssr.models
 
 /**
  * Created by hanip on 4/30/16.

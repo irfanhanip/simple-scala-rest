@@ -1,4 +1,4 @@
-package models
+package com.hanip.ssr.models
 
 import play.api.libs.json.Json
 

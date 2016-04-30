@@ -2,15 +2,16 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET      /items                                 controllers.ItemController.list
-GET      /item/:id                              controllers.ItemController.show(id: Int)
-POST     /item/create                           controllers.ItemController.create
+GET     /               com.hanip.ssr.controllers.Application
+#GET      /items                                 @com.hanip.ssr.controllers.ItemController.list
+#GET      /item/:id                              ItemController.show(id: Int)
+#POST     /item/create                           ItemController.create
 
-POST     /cart/create                           controllers.CartController.create
-GET      /cart/:id                              controllers.CartController.show(id : Int)
-POST     /cart/addItem                          controllers.CartController.addItem
-POST     /cart/removeItem                       controllers.CartController.removeItem
-POST     /cart/useCoupon                        controllers.CartController.useCoupon
-GET      /cart/:id/listItems                    controllers.CartController.listItems(id: Int)
+#POST     /cart/create                           CartController.create
+#GET      /cart/:id                              CartController.show(id : Int)
+#POST     /cart/addItem                          CartController.addItem
+#POST     /cart/removeItem                       CartController.removeItem
+#POST     /cart/useCoupon                        CartController.useCoupon
+#GET      /cart/:id/listItems                    CartController.listItems(id: Int)
 
-GET      /coupons                               controllers.CouponController.list
+#GET      /coupons                               CouponController.list
