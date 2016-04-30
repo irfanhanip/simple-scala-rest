@@ -1,0 +1,16 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET      /items                                 controllers.ItemController.list
+GET      /item/:id                              controllers.ItemController.show(id: Int)
+POST     /item/create                           controllers.ItemController.create
+
+POST     /cart/create                           controllers.CartController.create
+GET      /cart/:id                              controllers.CartController.show(id : Int)
+POST     /cart/addItem                          controllers.CartController.addItem
+POST     /cart/removeItem                       controllers.CartController.removeItem
+POST     /cart/useCoupon                        controllers.CartController.useCoupon
+GET      /cart/:id/listItems                    controllers.CartController.listItems(id: Int)
+
+GET      /coupons                               controllers.CouponController.list
