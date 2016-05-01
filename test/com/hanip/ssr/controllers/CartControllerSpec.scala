@@ -13,13 +13,13 @@ import org.specs2.execute.Results
 import org.specs2.matcher.Matchers
 import org.specs2.mock.Mockito
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.{JsObject, JsString}
+import play.api.libs.json.{JsNumber, JsObject, JsString}
 import play.api.test._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ItemControllerSpec extends PlaySpecification with Results with Matchers with Mockito {
+class CartControllerSpec extends PlaySpecification with Results with Matchers with Mockito {
   sequential
 
   val daoMock = mock[BaseDAO[CartTable, Cart]]
@@ -44,14 +44,6 @@ class ItemControllerSpec extends PlaySpecification with Results with Matchers wi
 
   "Routes" should {
 
-    "send 200 when get /items" in {
-      daoMock.findAll.returns(Future {
-        Seq(Item(1, "name", BigDecimal.apply(42.00), "desc"))
-      })
-      route(application, FakeRequest(GET, "/items")).map(
-        status(_)) shouldEqual Some(OK)
-    }
-
     "send 204 when there isn't a /item/0" in {
       daoMock.findById(0).returns(Future {
         None
@@ -60,54 +52,24 @@ class ItemControllerSpec extends PlaySpecification with Results with Matchers wi
         status(_)) shouldEqual Some(NO_CONTENT)
     }
 
-    "send 200 when there is a /item/1" in {
+    "send 200 when there is a /cart/1" in {
       daoMock.findById(1).returns(Future {
-        Some(Item(1, "name", BigDecimal.apply(42.00), "desc"))
+        Some(Cart(1, 1, -99, 0, "IDR"))
       })
-      route(application, FakeRequest(GET, "/item/1")).map(
+      route(application, FakeRequest(GET, "/cart/1")).map(
         status(_)) shouldEqual Some(OK)
     }
 
-    "send 415 when post to create a item without json type" in {
-      route(application, FakeRequest(POST, "/item/create")).map(
-        status(_)) shouldEqual Some(UNSUPPORTED_MEDIA_TYPE)
-    }
-
-    "send 400 when post to create a item with empty json" in {
-      route(application,
-        FakeRequest(POST, "/item/create", FakeHeaders(("Content-type", "application/json") :: Nil), JsObject(Seq()))).map(
-        status(_)) shouldEqual Some(BAD_REQUEST)
-    }
-
-    "send 400 when post to create a item with wrong json" in {
-      route(application,
-        FakeRequest(POST, "/item/create", FakeHeaders(("Content-type", "application/json") :: Nil), JsObject(Seq("wrong" -> JsString("wrong"))))).map(
-        status(_)) shouldEqual Some(BAD_REQUEST)
-    }
-
-    "send 201 when post to create a item with valid json" in {
-      val (name, price, desc) = ("Apple", BigDecimal.apply(5000.00), "Shut up and take my money")
-      daoMock.insert(Item(0, name, price, desc)).returns(Future {
+    "send 200 when post to add item to cart" in {
+      val (couponId, voucherId, totalAmount, currency) = (-99, 1, 0, "IDR")
+      daoMock.insert(Cart(1, couponId, voucherId, totalAmount, currency)).returns(Future {
         1
       })
       route(application,
-        FakeRequest(POST, "/item/create", FakeHeaders(("Content-type", "application/json") :: Nil),
-          JsObject(Seq("name" -> JsString(name), "price" -> JsString(price.toString()), "desc" -> JsString(desc))))).map(
-        status(_)) shouldEqual Some(CREATED)
+        FakeRequest(POST, "/cart/addItem", FakeHeaders(("Content-type", "application/json") :: Nil),
+          JsObject(Seq("cart_id" -> JsNumber(1), "item_id" -> JsNumber(1))))).map(
+        status(_)) shouldEqual Some(OK)
     }
-
-    "send 500 when post to create a item with valid json" in {
-      val (name, price, desc) = ("Apple", BigDecimal.apply(5000.00), "Shut up and take my money")
-      daoMock.insert(Item(0, name, price, desc)).returns(Future.failed {
-        new Exception("Slick exception")
-      })
-      route(application,
-        FakeRequest(POST, "/item/create", FakeHeaders(("Content-type", "application/json") :: Nil),
-          JsObject(Seq("name" -> JsString(name), "price" -> JsString(price.toString()), "desc" -> JsString(desc))))).map(
-        status(_)) shouldEqual Some(INTERNAL_SERVER_ERROR)
-    }
-
-
   }
 
 }

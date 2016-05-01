@@ -85,7 +85,7 @@ class ItemControllerSpec extends PlaySpecification with Results with Matchers wi
         status(_)) shouldEqual Some(BAD_REQUEST)
     }
 
-    "send 201 when post to create a item with valid json" in {
+    "send 200 when post to create a item with valid json" in {
       val (name, price, desc) = ("Apple", BigDecimal.apply(5000.00), "Shut up and take my money")
       daoMock.insert(Item(0, name, price, desc)).returns(Future {
         1
@@ -93,12 +93,12 @@ class ItemControllerSpec extends PlaySpecification with Results with Matchers wi
       route(application,
         FakeRequest(POST, "/item/create", FakeHeaders(("Content-type", "application/json") :: Nil),
           JsObject(Seq("name" -> JsString(name), "price" -> JsString(price.toString()), "desc" -> JsString(desc))))).map(
-        status(_)) shouldEqual Some(CREATED)
+        status(_)) shouldEqual Some(OK)
     }
 
     "send 500 when post to create a item with valid json" in {
       val (name, price, desc) = ("Apple", BigDecimal.apply(5000.00), "Shut up and take my money")
-      daoMock.insert(Item(0, name, price, desc)).returns(Future.failed {
+      daoMock.insert(Item(4, name, price, desc)).returns(Future.failed {
         new Exception("Slick exception")
       })
       route(application,
