@@ -1,34 +1,42 @@
 package com.hanip.ssr.dao
 
 import com.hanip.ssr.models.ItemCart
-import org.joda.time.DateTime
-
-import scala.concurrent.Future
-
-import javax.inject.Inject
-import play.api.db.slick.DatabaseConfigProvider
-import play.api.db.slick.HasDatabaseConfigProvider
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import com.hanip.ssr.persistence.SlickTables.BaseTable
+import play.api.Play
+import play.api.db.slick.{HasDatabaseConfig, DatabaseConfigProvider}
+import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile
-
-import com.hanip.ssr.helpers.SlickMapping
+import slick.lifted.Tag
 
 import scala.concurrent.Future
 
-class ItemCartDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
-  import driver.api._
+/**
+ * Created by hanip on 4/30/16.
+ */
+object ItemCartDAO extends HasDatabaseConfig[JdbcProfile] {
+  protected lazy val dbConfig: DatabaseConfig[JdbcProfile] = DatabaseConfigProvider.get[JdbcProfile](Play.current)
 
-  private val ItemCarts = TableQuery[ItemCartsTable]
+  import dbConfig.driver.api._
 
-  def all(): Future[Seq[ItemCart]] = db.run(ItemCarts.result)
+  class ItemCartTable(tag: Tag) extends BaseTable[ItemCart](tag, "item_carts") {
+    def isEqual(cart: ItemCart): Rep[Boolean] = {
+      itemId === cart.itemId && cartId === cart.cartId
+    }
 
-  def insert(itemCart: ItemCart): Future[Unit] = db.run(ItemCarts += itemCart).map { _ => () }
+    def itemId = column[Int]("item_id")
 
-  private class ItemCartsTable(tag: Tag) extends Table[ItemCart](tag, "ItemCart") {
-   def itemId = column[Int]("item_id", O.PrimaryKey)
-   def cartId = column[Int]("cart_id", O.PrimaryKey)
-   def createdOn = column[DateTime]("created_on")
+    def cartId = column[Int]("cart_id")
 
-   def * = (itemId, cartId, createdOn) <> (ItemCart.tupled, ItemCart.unapply _)
+    def * = (id, itemId, cartId) <>(ItemCart.tupled, ItemCart.unapply _)
   }
- }
+
+  implicit val itemsTableQ: TableQuery[ItemCartTable] = TableQuery[ItemCartTable]
+
+  def findByCartId(id : Int): Future[Seq[ItemCart]] = {
+    db.run(itemsTableQ.filter(_.cartId === id).result)
+  }
+
+  def deleteByItemCart(cart: ItemCart): Future[Int] = {
+    db.run(itemsTableQ.filter(_.isEqual(cart)).delete)
+  }
+}

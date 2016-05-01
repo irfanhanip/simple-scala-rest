@@ -2,16 +2,20 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /               com.hanip.ssr.controllers.Application
-#GET      /items                                 @com.hanip.ssr.controllers.ItemController.list
-#GET      /item/:id                              ItemController.show(id: Int)
-#POST     /item/create                           ItemController.create
+# An example controller showing how to write asynchronous code
+GET         /items                     com.hanip.ssr.controllers.ItemController.list
+GET         /item/:id                  com.hanip.ssr.controllers.ItemController.show(id: Int)
+POST        /item/create               com.hanip.ssr.controllers.ItemController.create
 
-#POST     /cart/create                           CartController.create
-#GET      /cart/:id                              CartController.show(id : Int)
-#POST     /cart/addItem                          CartController.addItem
-#POST     /cart/removeItem                       CartController.removeItem
-#POST     /cart/useCoupon                        CartController.useCoupon
-#GET      /cart/:id/listItems                    CartController.listItems(id: Int)
 
-#GET      /coupons                               CouponController.list
+GET         /cart/:id                  com.hanip.ssr.controllers.CartController.show(id : Int)
+POST        /cart/addItem              com.hanip.ssr.controllers.CartController.addItem
+POST        /cart/removeItem           com.hanip.ssr.controllers.CartController.removeItem
+POST        /cart/useCoupon            com.hanip.ssr.controllers.CartController.useCoupon
+GET         /cart/:id/listItems        com.hanip.ssr.controllers.CartController.listItems(id: Int)
+
+
+GET         /coupons                   com.hanip.ssr.controllers.CouponController.list
+
+
+

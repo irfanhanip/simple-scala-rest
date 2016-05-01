@@ -1,17 +1,18 @@
-name := """simple-scala-rest"""
+name := "simple-scala-rest"
 
-version := "1.0-SNAPSHOT"
+version := "0.1"
 
-lazy val root = project.in(file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.7"
 
 libraryDependencies ++= Seq(
-  "com.typesafe.play" %% "play-jdbc-evolutions" % "2.5.3",
-  "com.typesafe.play" %% "play-jdbc-api" % "2.5.3",
-  "com.typesafe.play" %% "play-specs2" % "2.5.3",
-  "com.typesafe.play" %% "play-slick" % "2.0.2",
-  "com.typesafe.play" %% "play-slick-evolutions" % "2.0.2",
-  "com.typesafe.slick" %% "slick" % "3.1.1",
-  "com.h2database" % "h2" % "1.4.191"
-)
+  "com.typesafe.play" %% "play-slick" % "1.1.1",
+  "com.typesafe.play" %% "play-slick-evolutions" % "1.1.1",
+  evolutions,
+  "com.h2database" % "h2" % "1.4.191",
+  cache,
+  ws,
+  specs2 % Test)
+
+resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"

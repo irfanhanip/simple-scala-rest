@@ -1,30 +1,54 @@
 package com.hanip.ssr.controllers
 
-import javax.inject.Inject
+import javax.inject._
+
+import com.hanip.ssr.dao.AbstractBaseDAO
+import com.hanip.ssr.dao.ItemDAO.ItemTable
 import com.hanip.ssr.models.Item
-import play.api.mvc.{Action, Controller}
-import play.libs.Json
-import com.hanip.ssr.dao.ItemDAO
+import play.api.libs.json.{Json, Writes}
+import play.api.mvc._
 
-class ItemController @Inject() (itemDao:ItemDAO) extends Controller {
-  def list() = Action.async { request =>
+import scala.concurrent.{ExecutionContext, Future}
 
-    itemDao.all().map {
-      items => Ok(Json.toJson(items))
-    }
+/**
+ * Created by hanip on 4/30/16.
+ */
+@Singleton
+class ItemController @Inject()(itemDAO: AbstractBaseDAO[ItemTable, Item])(implicit exec: ExecutionContext) extends Controller {
+
+  implicit val itemsWrites = new Writes[Item] {
+    def writes(i: Item) = Json.obj(
+      "id" -> i.id,
+      "name" -> i.name,
+      "price" -> i.price,
+      "desc" -> i.desc
+    )
   }
 
-  def show(itemId: Int) = play.mvc.Results.TODO
-  /*
-    def show(itemId: Int) = Action.async { request =>
-      itemDao.findById(itemId).map { item =>
-        item.fold {
-          i => Ok(Json.toJson(i))
-        } { i => Ok(Json.toJson(i))
+  def list = Action.async {
+    itemDAO.findAll map { i => Ok(Json.toJson(i)) }
+  }
+
+  def show(id: Int) = Action.async {
+    itemDAO.findById(id) map { i => i.fold(NoContent)(i => Ok(Json.toJson(i))) }
+  }
+
+  def create = Action.async(parse.json) {
+    request => {
+      for {
+        name <- (request.body \ "name").asOpt[String]
+        price <- (request.body \ "price").asOpt[BigDecimal]
+        desc <- (request.body \ "desc").asOpt[String]
+      } yield {
+        (itemDAO.insert(Item(0, name, price, desc)) map { n => Ok(Json.obj("id" -> n)) }).recoverWith {
+          case e => Future {
+            e.printStackTrace()
+            InternalServerError("There as an error at the server")
+          }
         }
       }
-    }
-  */
-
-  def create() = play.mvc.Results.TODO
+    }.getOrElse(Future {
+      BadRequest("Wrong json format")
+    })
+  }
 }

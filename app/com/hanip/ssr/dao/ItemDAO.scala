@@ -1,39 +1,29 @@
 package com.hanip.ssr.dao
 
 import com.hanip.ssr.models.Item
-
-import scala.concurrent.Future
-
-import javax.inject.Inject
+import com.hanip.ssr.persistence.SlickTables.BaseTable
+import play.api.Play
 import play.api.db.slick.DatabaseConfigProvider
-import play.api.db.slick.HasDatabaseConfigProvider
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile
 
 /**
  * Created by hanip on 4/30/16.
  */
-class ItemDAO @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) extends HasDatabaseConfigProvider[JdbcProfile] {
-  import driver.api._
+object ItemDAO {
+  protected lazy val dbConfig: DatabaseConfig[JdbcProfile] = DatabaseConfigProvider.get[JdbcProfile](Play.current)
 
-  private val Items = TableQuery[ItemsTable]
+  import dbConfig.driver.api._
 
-  def all(): Future[Seq[Item]] = db.run(Items.result)
-
-  def findById(itemId: Int) = db.run {
-    Items.filter { f =>
-      f.id == itemId
-    }.result.headOption
-  }
-
-  def insert(item: Item): Future[Unit] = db.run(Items += item).map { _ => () }
-
-  private class ItemsTable(tag: Tag) extends Table[Item](tag, "Item") {
-    def id = column[Int]("id", O.PrimaryKey)
+  class ItemTable(tag: Tag) extends BaseTable[Item](tag, "items") {
     def name = column[String]("name")
+
     def price = column[BigDecimal]("price")
+
     def desc = column[String]("desc")
 
-    def * = (id, name, price, desc) <> (Item.tupled, Item.unapply _)
+    def * = (id, name, price, desc) <>(Item.tupled, Item.unapply _)
   }
+
+  implicit val itemsTableQ: TableQuery[ItemTable] = TableQuery[ItemTable]
 }
