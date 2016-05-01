@@ -98,7 +98,7 @@ class ItemControllerSpec extends PlaySpecification with Results with Matchers wi
 
     "send 500 when post to create a item with valid json" in {
       val (name, price, desc) = ("Apple", BigDecimal.apply(5000.00), "Shut up and take my money")
-      daoMock.insert(Item(4, name, price, desc)).returns(Future.failed {
+      daoMock.insert(Item(0, name, price, desc)).returns(Future.failed {
         new Exception("Slick exception")
       })
       route(application,

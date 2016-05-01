@@ -44,11 +44,11 @@ class CartControllerSpec extends PlaySpecification with Results with Matchers wi
 
   "Routes" should {
 
-    "send 204 when there isn't a /item/0" in {
+    "send 204 when there isn't a /cart/0" in {
       daoMock.findById(0).returns(Future {
         None
       })
-      route(application, FakeRequest(GET, "/item/0")).map(
+      route(application, FakeRequest(GET, "/cart/0")).map(
         status(_)) shouldEqual Some(NO_CONTENT)
     }
 
@@ -57,17 +57,6 @@ class CartControllerSpec extends PlaySpecification with Results with Matchers wi
         Some(Cart(1, 1, -99, 0, "IDR"))
       })
       route(application, FakeRequest(GET, "/cart/1")).map(
-        status(_)) shouldEqual Some(OK)
-    }
-
-    "send 200 when post to add item to cart" in {
-      val (couponId, voucherId, totalAmount, currency) = (-99, 1, 0, "IDR")
-      daoMock.insert(Cart(1, couponId, voucherId, totalAmount, currency)).returns(Future {
-        1
-      })
-      route(application,
-        FakeRequest(POST, "/cart/addItem", FakeHeaders(("Content-type", "application/json") :: Nil),
-          JsObject(Seq("cart_id" -> JsNumber(1), "item_id" -> JsNumber(1))))).map(
         status(_)) shouldEqual Some(OK)
     }
   }
