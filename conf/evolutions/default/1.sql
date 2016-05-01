@@ -1,7 +1,7 @@
 # --- !Ups
 
 create table "coupons" (
-  "id" INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  "id" INT NOT NULL SERIAL PRIMARY KEY,
   "code" VARCHAR(64) NOT NULL,
   "coupon_type" INT,
   "fix_discount" DECIMAL,
@@ -12,7 +12,7 @@ create table "coupons" (
 );
 
 create table "carts" (
-  "id" INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  "id" INT NOT NULL SERIAL PRIMARY KEY,
   "status" INT,
   "coupon_id" INT,
   "total_amount" DECIMAL NOT NULL,
@@ -20,14 +20,14 @@ create table "carts" (
 );
 
 create table "items" (
-  "id" INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  "id" INT NOT NULL SERIAL PRIMARY KEY,
   "name" VARCHAR(254) NOT NULL,
   "price" DECIMAL NOT NULL,
   "desc" VARCHAR(254) NOT NULL
 );
 
 create table "item_carts" (
-  "id" INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  "id" INT NOT NULL SERIAL PRIMARY KEY,
   "item_id" INT NOT NULL,
   "cart_id" INT NOT NULL,
 );
