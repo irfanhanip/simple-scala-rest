@@ -15,8 +15,6 @@ dist
 /.project
 /RUNNING_PID
 /.settings
-/conf/application*.conf
-/conf/logger.xml
 /.target
 /.cache
 .DS_Store
