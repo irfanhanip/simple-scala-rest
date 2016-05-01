@@ -13,10 +13,16 @@ import org.specs2.execute.Results
 import org.specs2.matcher.Matchers
 import org.specs2.mock.Mockito
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsObject, JsString}
 import play.api.test._
 
-class ApplicationSpec extends PlaySpecification with Results with Matchers with Mockito{
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+class CouponControllerSpec extends PlaySpecification with Results with Matchers with Mockito {
   sequential
+
+  val daoMock = mock[BaseDAO[CouponTable, Coupon]]
 
   val application = new GuiceApplicationBuilder().overrides(new AbstractModule {
     override def configure() = {
@@ -33,13 +39,25 @@ class ApplicationSpec extends PlaySpecification with Results with Matchers with 
     def provideItemCartDAO: AbstractBaseDAO[ItemCartTable, ItemCart] = mock[BaseDAO[ItemCartTable, ItemCart]]
 
     @Provides
-    def provideCouponDAO: AbstractBaseDAO[CouponTable, Coupon] = mock[BaseDAO[CouponTable, Coupon]]
+    def provideCouponDAO: AbstractBaseDAO[CouponTable, Coupon] = daoMock
   }).build
 
   "Routes" should {
 
-    "send 404 on a bad request" in  {
-      route(application, FakeRequest(GET, "/stolen")).map(status(_)) shouldEqual Some(NOT_FOUND)
+    "send 200 when get empty /coupons" in {
+      daoMock.findAll.returns(Future {
+        Seq()
+      })
+      route(application, FakeRequest(GET, "/coupons")).map(
+        status(_)) shouldEqual Some(OK)
+    }
+
+    "send 200 when get /coupons" in {
+      daoMock.findAll.returns(Future {
+        Seq(Coupon(0, "TL2016", 1, 2000.00, -99, 1462035032, 1493571032, "IDR"))
+      })
+      route(application, FakeRequest(GET, "/coupons")).map(
+        status(_)) shouldEqual Some(OK)
     }
 
   }
