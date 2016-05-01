@@ -1,35 +1,35 @@
 # --- !Ups
 
 create table "coupons" (
-  "id" INT NOT NULL SERIAL PRIMARY KEY,
+  "id" SERIAL NOT NULL PRIMARY KEY,
   "code" VARCHAR(64) NOT NULL,
   "coupon_type" INT,
   "fix_discount" DECIMAL,
   "percent_discount" DECIMAL,
   "validity_start" BIGINT,
   "validity_end" BIGINT,
-  "currency" VARCHAR(3),
+  "currency" VARCHAR(3)
 );
 
 create table "carts" (
-  "id" INT NOT NULL SERIAL PRIMARY KEY,
+  "id" SERIAL NOT NULL PRIMARY KEY,
   "status" INT,
   "coupon_id" INT,
   "total_amount" DECIMAL NOT NULL,
-  "currency" VARCHAR(3),
+  "currency" VARCHAR(3)
 );
 
 create table "items" (
-  "id" INT NOT NULL SERIAL PRIMARY KEY,
+  "id" SERIAL NOT NULL PRIMARY KEY,
   "name" VARCHAR(254) NOT NULL,
   "price" DECIMAL NOT NULL,
   "desc" VARCHAR(254) NOT NULL
 );
 
 create table "item_carts" (
-  "id" INT NOT NULL SERIAL PRIMARY KEY,
+  "id" SERIAL NOT NULL PRIMARY KEY,
   "item_id" INT NOT NULL,
-  "cart_id" INT NOT NULL,
+  "cart_id" INT NOT NULL
 );
 # --- !Downs
 ;
